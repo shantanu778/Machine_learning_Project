@@ -10,8 +10,8 @@ from sklearn.pipeline import Pipeline
 
 # ========== IMPORT DATA ======================================================
 
-X_train = np.load('/Users/noaschwensfeier/python_ml/Machine_learning_Project/dataset/X_train.npy')
-y_train = np.load('/Users/noaschwensfeier/python_ml/Machine_learning_Project/dataset/y_train.npy')
+X_train = np.load('../dataset/X_train.npy')
+y_train = np.load('../dataset/y_train.npy')
 
 # ========== ANALYSIS PIPELINE ================================================
 
@@ -43,7 +43,7 @@ param_grid = {
 # ========== GRID SEARCH ======================================================
 
 # Initialise the GridSearchCV object and run the grid search. 
-search = GridSearchCV(pipe, param_grid=param_grid, n_jobs=2, cv=5, verbose=4)
+search = GridSearchCV(pipe, param_grid=param_grid, n_jobs=8, cv=5, verbose=4)
 search.fit(X_train, y_train)
 
 # Print test accuracy and parameters of optimal model. Note: this refers to 
