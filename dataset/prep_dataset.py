@@ -38,7 +38,7 @@ def split_digits(X, y):
 
 # ========== IMPORT DATA ======================================================
 
-path = '/Users/noaschwensfeier/python_ml/Machine_learning_Project/dataset.txt'
+path = 'dataset.txt'
 with open(path,'r') as data:
     X = [line.strip().split("  ") for line in data]
     y = [i for i in range(10) for j in range(200)] # create labels
@@ -55,7 +55,7 @@ X_train, y_train, X_test, y_test = split_digits(X,y)
 
 # ========== EXPORT DATA ======================================================
 
-np.save('dataset/X_train.npy', X_train, allow_pickle=True)
-np.save('dataset/y_train.npy', y_train, allow_pickle=True)
-np.save('dataset/X_test.npy', X_test, allow_pickle=True)
-np.save('dataset/y_test.npy', y_test, allow_pickle=True)
+np.save('X_traint.npy', X_train, allow_pickle=True)
+np.save('y_traint.npy', y_train, allow_pickle=True)
+np.save('X_testt.npy', X_test, allow_pickle=True)
+np.save('y_testt.npy', y_test, allow_pickle=True)
