@@ -55,7 +55,7 @@ X_train, y_train, X_test, y_test = split_digits(X,y)
 
 # ========== EXPORT DATA ======================================================
 
-np.save('X_traint.npy', X_train, allow_pickle=True)
-np.save('y_traint.npy', y_train, allow_pickle=True)
-np.save('X_testt.npy', X_test, allow_pickle=True)
-np.save('y_testt.npy', y_test, allow_pickle=True)
+np.save('X_train.npy', X_train, allow_pickle=True)
+np.save('y_train.npy', y_train, allow_pickle=True)
+np.save('X_test.npy', X_test, allow_pickle=True)
+np.save('y_test.npy', y_test, allow_pickle=True)
