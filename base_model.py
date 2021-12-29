@@ -114,6 +114,8 @@ def teacher_output(row):
 
 output = np.apply_along_axis(get_output,1,features_test)
 teacher = np.apply_along_axis(teacher_output,1,y_test)
+
+## It is a Line for Test
 error = np.where(output==teacher,0,1)
 error_rate = np.sum(error)/1000
 print("Testing Error: ", error_rate)
