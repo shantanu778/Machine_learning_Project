@@ -17,8 +17,8 @@ X = X.reshape(2000,16,15)
 X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.50,random_state=43)
 
 #Structure
-features_train = structure(X_train)
-features_test = structure(X_test)
+features_train = structure(X_train,cell_size=2)
+features_test = structure(X_test,cell_size=2)
 clf = svm.SVC(kernel='rbf').fit(features_train, y_train)
 print("Structure: {}".format(clf.score(features_test, y_test,)))
 

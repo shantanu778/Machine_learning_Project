@@ -338,7 +338,7 @@ def zone(image,cell_size):
     ---------
     
     image = 16 X 15 matrix of a digit image
-    cell_size = size of a zone e.g 2,4,8 (must be a factor of 16)
+    cell_size = divides the image into multiple sub images of cell_size*cell_size squares. e.g 2,4,8 (must be a factor of 16).
     
     
     returns
@@ -362,7 +362,7 @@ def zone(image,cell_size):
             
     return features
 
-def structure(X,normalize=True):
+def structure(X, cell_size, normalize=True):
     
     """measures the ratio of black(0) and white(6) pixel counts in different orientation (row, col, zones)
     
@@ -372,6 +372,7 @@ def structure(X,normalize=True):
     ---------
     
     X = dataset of digit images ((number of samples) 16 X 15 matrix)
+    cell_size = divides the image into multiple sub images of cell_size*cell_size squares. e.g 2,4,8 (must be a factor of 16).
     normalize (optional) = Boolean variable. If true then normalize the features. defualt = True
     
     
@@ -384,11 +385,10 @@ def structure(X,normalize=True):
     """
     
     structure_X  = np.zeros(shape=(X.shape[0],95))
-    n_points = 2
     for p in range(X.shape[0]):
         h = horizontal(X[p])
         v = vertical(X[p])
-        z = zone(X[p],n_points)
+        z = zone(X[p],cell_size)
         structure_X[p] = np.asarray(h+v+z)
 
     if normalize:
