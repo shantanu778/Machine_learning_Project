@@ -330,7 +330,7 @@ class FeatureExtractor:
         return lbp_X
 
 
-    def fit_transform(self, X, cell_size=None):
+    def transform(self, X, cell_size=None):
         '''Apply feature extraction method. If method is structure,
         cell_size needs to be specified.'''
 
