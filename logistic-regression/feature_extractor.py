@@ -1,7 +1,6 @@
 import numpy as np
 from skimage.feature import local_binary_pattern
 import skimage.feature
-import math
 
 
 class FeatureExtractor:
