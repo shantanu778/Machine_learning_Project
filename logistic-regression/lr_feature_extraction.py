@@ -17,8 +17,8 @@ X_test = X_test.reshape(1000,16,15)
 
 for extr_method in FeatureExtractor.VALID_METHODS:
     ft_structure = FeatureExtractor(method=extr_method)
-    X_train_transf = ft_structure.fit_transform(X_train, cell_size=2)
-    X_test_transf = ft_structure.fit_transform(X_test, cell_size=2)
+    X_train_transf = ft_structure.transform(X_train, cell_size=2)
+    X_test_transf = ft_structure.transform(X_test, cell_size=2)
 
     np.save(f'dataset/extracted_features/{extr_method}/X_train.npy', X_train_transf, allow_pickle=True)
     np.save(f'dataset/extracted_features/{extr_method}/X_test.npy', X_test_transf, allow_pickle=True)
