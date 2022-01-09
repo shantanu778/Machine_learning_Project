@@ -27,8 +27,8 @@ pca = PCA(svd_solver='auto')
 classifier = LogisticRegression(max_iter=500, multi_class='multinomial')
 
 # Combine into a pipeline.
-# PCA is populated in the param_grid.
-pipe = Pipeline(steps=[('scaler', scaler), ('pca', 'passthrough'), ('classifier', classifier)])
+# PCA and scaler are populated in the param_grid.
+pipe = Pipeline(steps=[('scaler', 'passthrough'), ('pca', 'passthrough'), ('classifier', classifier)])
 
 
 # ========== GRID SEARCH ======================================================
@@ -41,16 +41,36 @@ for extr_method in extr_methods:
 
     # x_train differs according to the feature extraction method used.
     file_path = path.join('dataset/extracted_features', extr_method)
-    X_train = np.load(file_path, 'X_train.npy')
+    X_train = np.load(path.join(file_path, 'X_train.npy'))
 
     # Specify parameter space to search.
-    param_grid = {
-        'pca': [None, pca], # no PCA vs. PCA
+    param_grid = [
+        {'scaler': [None],
+        'pca': [None], 
+        'classifier__C': np.logspace(-4, 2, num=10),
+        'classifier__penalty': ['none', 'l1', 'l2'], 
+        'classifier__solver': ['saga', 'sag']},
+
+        {'scaler': [scaler],
+        'pca': [None], 
+        'classifier__C': np.logspace(-4, 2, num=10),
+        'classifier__penalty': ['none', 'l1', 'l2'], 
+        'classifier__solver': ['saga', 'sag']},
+
+        {'scaler': [None],
+        'pca': [pca],
         'pca__n_components': [np.linspace(2, X_train.shape[1], X_train.shape[1]-1, dtype=int)], 
         'classifier__C': np.logspace(-4, 2, num=10),
         'classifier__penalty': ['none', 'l1', 'l2'], 
-        'classifier__solver': ['saga', 'sag']
-    }
+        'classifier__solver': ['saga', 'sag']},
+
+        {'scaler': [scaler],
+        'pca': [pca],
+        'pca__n_components': [np.linspace(2, X_train.shape[1], X_train.shape[1]-1, dtype=int)], 
+        'classifier__C': np.logspace(-4, 2, num=10),
+        'classifier__penalty': ['none', 'l1', 'l2'], 
+        'classifier__solver': ['saga', 'sag']}
+        ]
 
     # Initialise the GridSearchCV object and run the grid search. 
     search = GridSearchCV(pipe, param_grid=param_grid, n_jobs=8, cv=5, verbose=4)
