@@ -40,6 +40,6 @@ for extr_method in extr_methods:
     classifier = joblib.load(f'lr_optimal_{extr_method}.joblib')
     print("==================================================================")
     print(f"\nTraining score for {extr_method}: ", classifier.score(X_train, y_train))
-    print(f"Tresting score for {extr_method}: ", classifier.score(X_test, y_test))
+    print(f"Testing score for {extr_method}: ", classifier.score(X_test, y_test))
     print(classifier.get_params())
     print("\n")
