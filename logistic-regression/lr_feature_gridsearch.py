@@ -34,7 +34,7 @@ pipe = Pipeline(steps=[('scaler', scaler), ('pca', 'passthrough'), ('classifier'
 # ========== GRID SEARCH ======================================================
 
 # y_train is the same for all models
-y_train = np.load('dataset/raw/y_train.npy')
+y_train = np.load('dataset/y_train.npy')
 extr_methods = ['structure', 'hog', 'gradient', 'hotspots', 'lbp']
 
 for extr_method in extr_methods:
