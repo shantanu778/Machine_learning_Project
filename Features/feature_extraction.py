@@ -8,8 +8,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from skimage.feature import local_binary_pattern
 import skimage.feature
-import math
-
+from skimage.transform import resize
 
 
 
@@ -77,7 +76,7 @@ def get_feature(i,j,image):
         
 def hotspots(X):
     
-    """We define 9 hotspots in our image and measures the distances from the nearest 
+    """We define 16 hotspots in our image and measures the distances from the nearest 
     white pixel in 8 chaincode directions.
     
     Parameter
@@ -87,15 +86,15 @@ def hotspots(X):
     
     returns
     -------
-    numpy array of features. For each image it finds 72 features
+    numpy array of features. For each image it finds 128 features
     
     """
     
     features = list()
     hotspots = list()
 
-    for i in range(4,11,3):
-        for j in range(3,12,4):
+    for i in range(5,12,2):
+        for j in range(5,12,2):
             hotspots.append((i,j))
             
     for r in range(X.shape[0]):
@@ -126,15 +125,24 @@ def get_intensity(image,i,j):
         magnitude of intensity change
     
     """
+    soble_x = np.asarray([[-1,0,1],[-2,0,2],[-1,0,1]])
+    soble_y = np.asarray([[-1,-2,-1],[0,0,0],[1,2,1]])
+    x = 0
+    y = 0
+    chain = [(0,1),(0,-1),(1,0),(-1,0),(-1,1),(-1,-1),(1,-1),(1,1)]
+
+    for c in chain:
+        m,n = c
+        x = x+image[i+m][j+n]*soble_x[1+m][1+n]
+        y = y+image[i+m][j+n]*soble_y[1+m][1+n]
+
     
-    x = image[i,j-1]-image[i,j+1]
-    y = image[i-1,j]-image[i+1,j]
     magnitude = np.sqrt(x*x+y*y)
 
     return magnitude
     
 
-def gradient(X,n_pca=100):
+def gradient(X):
     
     """replace the pixel values of images with the magnitude of gradient or intensity change.
     https://en.wikipedia.org/wiki/Image_gradient
@@ -163,10 +171,7 @@ def gradient(X,n_pca=100):
                 grad[p][i-1][j-1]=get_intensity(inp,i,j)
         grad_X[p] = grad[p].flatten()
         
-    
-    grad_X = StandardScaler().fit_transform(grad_X)
-    pca = PCA(n_components=n_pca, svd_solver='full')
-    grad_X = pca.fit_transform(grad_X)
+
     
     return grad_X
     
@@ -233,9 +238,10 @@ def hog(X,normalize=True):
     
     """
     
-    hog_X  = np.zeros(shape=(X.shape[0],144))
+    hog_X  = np.zeros(shape=(X.shape[0],324))
     for p in range(X.shape[0]):
-        hog_X[p]= skimage.feature.hog(X[p], orientations=8, pixels_per_cell=(4, 4))
+        image = resize(X[p], (16,16)) 
+        hog_X[p]= skimage.feature.hog(image, orientations=9, pixels_per_cell=(4, 4),cells_per_block=(2, 2),block_norm='L2')
     if normalize:
         hog_X = StandardScaler().fit_transform(hog_X)
 
@@ -314,7 +320,6 @@ def zone_cal(image):
     
     """
     
-    features = list()
     black = 1
     white = 1
     m = int(image.shape[0])
