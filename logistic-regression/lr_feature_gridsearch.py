@@ -1,5 +1,7 @@
 import numpy as np
 import pandas as pd
+import os
+from os import path
 import joblib
 from sklearn.model_selection import train_test_split, KFold, GridSearchCV
 from sklearn.linear_model import LogisticRegression
@@ -25,7 +27,8 @@ pca = PCA(svd_solver='auto')
 classifier = LogisticRegression(max_iter=500, multi_class='multinomial')
 
 # Combine into a pipeline.
-pipe = Pipeline(steps=[('scaler', scaler), ('pca', pca), ('classifier', classifier)])
+# PCA is populated in the param_grid.
+pipe = Pipeline(steps=[('scaler', scaler), ('pca', 'passthrough'), ('classifier', classifier)])
 
 
 # ========== GRID SEARCH ======================================================
@@ -35,13 +38,15 @@ y_train = np.load('dataset/raw/y_train.npy')
 extr_methods = ['structure', 'hog', 'gradient', 'hotspots', 'lbp']
 
 for extr_method in extr_methods:
-    
-    # x_train differs according to the feature extraction method used
-    X_train = np.load(f'dataset/{extr_methods}/X_train.npy')
+
+    # x_train differs according to the feature extraction method used.
+    file_path = path.join('dataset', extr_method)
+    X_train = np.load(file_path, 'X_train.npy')
 
     # Specify parameter space to search.
     param_grid = {
-        'pca__n_components': np.linspace(2, X_train.shape[1], X_train.shape[1]-1, dtype=int), 
+        'pca': [None, pca], # no PCA vs. PCA
+        'pca__n_components': [np.linspace(2, X_train.shape[1], X_train.shape[1]-1, dtype=int)], 
         'classifier__C': np.logspace(-4, 2, num=10),
         'classifier__penalty': ['none', 'l1', 'l2'], 
         'classifier__solver': ['saga', 'sag']
