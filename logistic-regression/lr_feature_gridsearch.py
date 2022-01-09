@@ -40,7 +40,7 @@ extr_methods = ['structure', 'hog', 'gradient', 'hotspots', 'lbp']
 for extr_method in extr_methods:
 
     # x_train differs according to the feature extraction method used.
-    file_path = path.join('dataset', extr_method)
+    file_path = path.join('dataset/extracted_features', extr_method)
     X_train = np.load(file_path, 'X_train.npy')
 
     # Specify parameter space to search.
