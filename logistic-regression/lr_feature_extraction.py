@@ -1,7 +1,9 @@
 import numpy as np
 import os
 from os import path
-from feature_extractor import FeatureExtractor
+from importlib import import_module
+#import_module("ffeature_extraction")
+from feature_extraction import FeatureExtractor
 
 # ========== IMPORT DATA ======================================================
 
