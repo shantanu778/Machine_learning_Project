@@ -6,7 +6,7 @@ from skimage.transform import resize
 
 class FeatureExtractor:
 
-    VALID_METHODS = ['structure', 'hog', 'gradient', 'hotspots']
+    VALID_METHODS = ['pca','structure', 'hog', 'gradient', 'hotspots']
 
     def __init__(self, method='structure'):
         self.method = method
@@ -335,7 +335,19 @@ class FeatureExtractor:
 
         return features
 
+    def __apply_pca(self, X):
+        """Returns the raw data as it is
+        
+        Parameter
+        ---------
+        X = dataset of digit images (16 X 15 matrix)
+        
+        Returns
+        -------
+        X
+        """
 
+        return X
 
     def transform(self, X, cell_size=None):
         '''Apply feature extraction method. If method is structure,
@@ -343,12 +355,14 @@ class FeatureExtractor:
 
         if isinstance(self.method, str) and self.method in FeatureExtractor.VALID_METHODS:
             if self.method == FeatureExtractor.VALID_METHODS[0]:
+                return self.__apply_pca(X)
+            if self.method == FeatureExtractor.VALID_METHODS[1]:
                 return self.__apply_structure(X, cell_size)
-            elif self.method == FeatureExtractor.VALID_METHODS[1]:
-                return self.__apply_hog(X)
             elif self.method == FeatureExtractor.VALID_METHODS[2]:
-                return self.__apply_gradient(X)
+                return self.__apply_hog(X)
             elif self.method == FeatureExtractor.VALID_METHODS[3]:
+                return self.__apply_gradient(X)
+            elif self.method == FeatureExtractor.VALID_METHODS[4]:
                 return self.__apply_hotspots(X)
          
         else:
