@@ -1,0 +1,14 @@
+name: ml-env
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python
+  - ipykernel
+  - scikit-learn
+  - pandas
+  - scikit-image
+  - ipython
+  - matplotlib
+  - pylint
+prefix: /home/noa/anaconda3/envs/ml-env

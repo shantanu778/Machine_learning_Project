@@ -1,29 +1,27 @@
 import numpy as np
 from skimage.feature import local_binary_pattern
 import skimage.feature
-from skimage.transform import resize
 
 
 class FeatureExtractor:
 
-    VALID_METHODS = ['pca','structure', 'hog', 'gradient', 'hotspots']
+    VALID_METHODS = ['structure', 'hog', 'gradient', 'hotspots', 'lbp']
 
     def __init__(self, method='structure'):
         self.method = method
 
 
     def __horizontal(self, image):
-        """measures the ratio of black(0) and white(6) pixel counts in each rows of the image
-    
+        """Measures the ratio of black(0) and white(6) pixel counts in each rows
+        of the image.
+        
         Parameter
         ---------
-        
         image = 16 X 15 matrix of a digit image
         
-        returns
+        Returns
         --------
         a list of 16 values
-        
         """
         
         features = list()
@@ -36,6 +34,7 @@ class FeatureExtractor:
                 elif image[i][j]==0:
                     white+=1
             features.append(black/white)
+
         return features
 
 
@@ -141,12 +140,8 @@ class FeatureExtractor:
         A matrix with (number of samples) X N dimension as features. 
         N = 16+15+number of zones
         """
-        if len(X.shape) == 2:
-               X = X.reshape(X.shape[0],16,15)  
-        row = X.shape[1]
-        col = X.shape[2]
-        dim = row+col+(row*(col+1))/(cell_size*cell_size)  
-        structure_X  = np.zeros(shape=(X.shape[0],int(dim)))
+        
+        structure_X  = np.zeros(shape=(X.shape[0],95))
         for p in range(X.shape[0]):
             h = self.__horizontal(X[p])
             v = self.__vertical(X[p])
@@ -156,7 +151,7 @@ class FeatureExtractor:
         return structure_X
 
 
-    def __apply_hog(self, X, cell_size=4, orientation=9,block_size=2):
+    def __apply_hog(self, X):
         """Histogram of oriented gradients(HOG)
         https://en.wikipedia.org/wiki/Histogram_of_oriented_gradients
         
@@ -169,19 +164,10 @@ class FeatureExtractor:
         -------
         A matrix with (number of samples) X 144 dimension as features  
         """
-        if len(X.shape) == 2:
-            X = X.reshape(X.shape[0],16,15) 
-
-        dim = block_size * block_size * orientation * ((cell_size-1)*(cell_size-1)) 
-        hog_X  = np.zeros(shape=(X.shape[0],dim))
+        
+        hog_X  = np.zeros(shape=(X.shape[0],144))
         for p in range(X.shape[0]):
-            image = resize(X[p], (16,16)) 
-            hog_X[p]= skimage.feature.hog(image, 
-                orientations=orientation, 
-                pixels_per_cell=(cell_size, cell_size),
-                cells_per_block=(block_size, block_size),
-                block_norm='L2')
-    
+            hog_X[p]= skimage.feature.hog(X[p], orientations=8, pixels_per_cell=(4, 4))
 
         return hog_X
 
@@ -199,18 +185,8 @@ class FeatureExtractor:
         floating point: magnitude of intensity change
         """
     
-        soble_x = np.asarray([[-1,0,1],[-2,0,2],[-1,0,1]])
-        soble_y = np.asarray([[-1,-2,-1],[0,0,0],[1,2,1]])
-        x = 0
-        y = 0
-        chain = [(0,1),(0,-1),(1,0),(-1,0),(-1,1),(-1,-1),(1,-1),(1,1)]
-
-        for c in chain:
-            m,n = c
-            x = x+image[i+m][j+n]*soble_x[1+m][1+n]
-            y = y+image[i+m][j+n]*soble_y[1+m][1+n]
-
-        
+        x = image[i,j-1]-image[i,j+1]
+        y = image[i-1,j]-image[i+1,j]
         magnitude = np.sqrt(x*x+y*y)
 
         return magnitude
@@ -229,13 +205,9 @@ class FeatureExtractor:
         -------
         features with n_pca components of each image    
         """
-        if len(X.shape) == 2:
-            X = X.reshape(X.shape[0],16,15)
-         
-        row = X.shape[1]
-        col = X.shape[2]
+        
         grad  = np.zeros(shape=X.shape)
-        grad_X = np.zeros(shape=(X.shape[0],row*col))
+        grad_X = np.zeros(shape=(X.shape[0],240))
         for p in range(X.shape[0]):
             inp = np.pad(X[p],(1,1),'constant',constant_values=(0))
             for i in range(1,17):
@@ -316,12 +288,9 @@ class FeatureExtractor:
         
         features = list()
         hotspots = list()
-        
-        if len(X.shape) == 2:
-            X = X.reshape(X.shape[0],16,15)
 
-        for i in range(5,12,2):
-            for j in range(5,12,2):
+        for i in range(4,11,3):
+            for j in range(3,12,4):
                 hotspots.append((i,j))
                 
         for r in range(X.shape[0]):
@@ -335,19 +304,31 @@ class FeatureExtractor:
 
         return features
 
-    def __apply_pca(self, X):
-        """Returns the raw data as it is
+
+    def __apply_lbp(self, X):
+        """Local binary patterns (lbp).
+        https://en.wikipedia.org/wiki/Local_binary_patterns
         
         Parameter
         ---------
-        X = dataset of digit images (16 X 15 matrix)
+        X = dataset of digit images ((number of samples) 16 X 15 matrix)
+        normalize (optional) = Boolean variable. If true then normalize the
+        features. default = True
         
         Returns
         -------
-        X
+        A matrix with (number of samples) X 128 dimension as features  
         """
 
-        return X
+        lbp_X  = np.zeros(shape=(X.shape[0],128))
+        for p in range(X.shape[0]):
+            lbp = local_binary_pattern(X[p], 8, 1 ,'default')
+            n_bins = 128
+            hist, _ = np.histogram(lbp, density=True, bins=n_bins, range=(0, n_bins))
+            lbp_X[p] = hist
+        
+        return lbp_X
+
 
     def transform(self, X, cell_size=None):
         '''Apply feature extraction method. If method is structure,
@@ -355,16 +336,15 @@ class FeatureExtractor:
 
         if isinstance(self.method, str) and self.method in FeatureExtractor.VALID_METHODS:
             if self.method == FeatureExtractor.VALID_METHODS[0]:
-                return self.__apply_pca(X)
-            if self.method == FeatureExtractor.VALID_METHODS[1]:
                 return self.__apply_structure(X, cell_size)
-            elif self.method == FeatureExtractor.VALID_METHODS[2]:
+            elif self.method == FeatureExtractor.VALID_METHODS[1]:
                 return self.__apply_hog(X)
-            elif self.method == FeatureExtractor.VALID_METHODS[3]:
+            elif self.method == FeatureExtractor.VALID_METHODS[2]:
                 return self.__apply_gradient(X)
-            elif self.method == FeatureExtractor.VALID_METHODS[4]:
+            elif self.method == FeatureExtractor.VALID_METHODS[3]:
                 return self.__apply_hotspots(X)
-         
+            elif self.method == FeatureExtractor.VALID_METHODS[4]:
+                return self.__apply_lbp(X)
         else:
             raise Exception('Please enter a valid method', FeatureExtractor.VALID_METHODS)
 

@@ -1,3 +1,5 @@
+# Feature extraction ML project
+
 import numpy as np
 from skimage.feature import local_binary_pattern
 import skimage.feature
@@ -6,7 +8,7 @@ from skimage.transform import resize
 
 class FeatureExtractor:
 
-    VALID_METHODS = ['pca','structure', 'hog', 'gradient', 'hotspots']
+    VALID_METHODS = ['structure', 'hog', 'gradient', 'hotspots']
 
     def __init__(self, method='structure'):
         self.method = method
@@ -135,7 +137,6 @@ class FeatureExtractor:
         cell_size*cell_size squares. e.g 2,4,8 (must be a factor of 16).
         normalize (optional) = Boolean variable. If true then normalize the 
         features. default = True
-
         Returns
         -------
         A matrix with (number of samples) X N dimension as features. 
@@ -335,19 +336,7 @@ class FeatureExtractor:
 
         return features
 
-    def __apply_pca(self, X):
-        """Returns the raw data as it is
-        
-        Parameter
-        ---------
-        X = dataset of digit images (16 X 15 matrix)
-        
-        Returns
-        -------
-        X
-        """
 
-        return X
 
     def transform(self, X, cell_size=None):
         '''Apply feature extraction method. If method is structure,
@@ -355,17 +344,13 @@ class FeatureExtractor:
 
         if isinstance(self.method, str) and self.method in FeatureExtractor.VALID_METHODS:
             if self.method == FeatureExtractor.VALID_METHODS[0]:
-                return self.__apply_pca(X)
-            if self.method == FeatureExtractor.VALID_METHODS[1]:
                 return self.__apply_structure(X, cell_size)
-            elif self.method == FeatureExtractor.VALID_METHODS[2]:
+            elif self.method == FeatureExtractor.VALID_METHODS[1]:
                 return self.__apply_hog(X)
-            elif self.method == FeatureExtractor.VALID_METHODS[3]:
+            elif self.method == FeatureExtractor.VALID_METHODS[2]:
                 return self.__apply_gradient(X)
-            elif self.method == FeatureExtractor.VALID_METHODS[4]:
+            elif self.method == FeatureExtractor.VALID_METHODS[3]:
                 return self.__apply_hotspots(X)
          
         else:
             raise Exception('Please enter a valid method', FeatureExtractor.VALID_METHODS)
-
-
