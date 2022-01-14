@@ -35,7 +35,7 @@ pipe = Pipeline(steps=[('scaler', 'passthrough'), ('pca', 'passthrough'), ('clas
 
 # y_train is the same for all models
 y_train = np.load('dataset/y_train.npy')
-extr_methods = ['structure', 'hog', 'gradient', 'hotspots', 'lbp']
+extr_methods = ['structure', 'hog', 'gradient', 'hotspots']
 
 for extr_method in extr_methods:
 

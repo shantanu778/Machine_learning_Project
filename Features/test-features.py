@@ -23,7 +23,7 @@ pca = PCA(svd_solver='auto')
 classifier = svm.SVC()
 pipe = Pipeline(steps=[('scaler', 'passthrough'), ('pca', 'passthrough'), ('classifier', classifier)])
 
-extr_methods = ['pca','structure', 'hog', 'gradient', 'hotspots']
+extr_methods = ['structure', 'hog', 'gradient', 'hotspots', 'lbp']
 
 for extr_method in extr_methods:
 
@@ -71,6 +71,5 @@ for extr_method in extr_methods:
     print('Best parameter (CV score=%0.3f):' % search.best_score_)
     print(search.best_params_)
 
-    # Print training accuracy of optimal model, trained on the entire train set.
-     
-    print('Best parameter (Test score=%0.3f):' % search.best_estimator_.score(X_test_transf, y_test))
+    # Print training accuracy of optimal model, trained on the entire train set. 
+    print(search.best_estimator_.score(X_test_transf, y_test))
