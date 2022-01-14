@@ -8,10 +8,10 @@ from sklearn.decomposition import PCA
 from sklearn.metrics import accuracy_score, multilabel_confusion_matrix
 from sklearn.pipeline import Pipeline
 
-# ========== IMPORT DATA ======================================================
+# ========== IMPORT DATA ======================================================4
 
-X_train = np.load('../dataset/X_train.npy')
-y_train = np.load('../dataset/y_train.npy')
+X_train = np.load('dataset/X_train.npy')
+y_train = np.load('dataset/y_train.npy')
 
 # ========== ANALYSIS PIPELINE ================================================
 
@@ -29,15 +29,36 @@ pca = PCA(svd_solver='auto')
 classifier = LogisticRegression(max_iter=500, multi_class='multinomial')
 
 # Combine into a pipeline.
-pipe = Pipeline(steps=[('scaler', scaler), ('pca', pca), ('classifier', classifier)])
+pipe = Pipeline(steps=[('scaler', 'passthrough'), ('pca', 'passthrough'), ('classifier', classifier)])
 
 # Specify parameter space to search.
-param_grid = {
-    'pca__n_components': np.linspace(2, 100, 100-1, dtype=int), 
-    'classifier__C': np.logspace(-4, 2, num=10),
-    'classifier__penalty': ['none', 'l1', 'l2'], 
-    'classifier__solver': ['saga', 'sag']
-}
+param_grid = [
+        {'scaler': [None],
+        'pca': [None], 
+        'classifier__C': np.logspace(-4, 2, num=10),
+        'classifier__penalty': ['none', 'l1', 'l2'], 
+        'classifier__solver': ['saga', 'sag']},
+
+        {'scaler': [scaler],
+        'pca': [None], 
+        'classifier__C': np.logspace(-4, 2, num=10),
+        'classifier__penalty': ['none', 'l1', 'l2'], 
+        'classifier__solver': ['saga', 'sag']},
+
+        {'scaler': [None],
+        'pca': [pca],
+        'pca__n_components': np.linspace(2, 100, 100-1, dtype=int), 
+        'classifier__C': np.logspace(-4, 2, num=10),
+        'classifier__penalty': ['none', 'l1', 'l2'], 
+        'classifier__solver': ['saga', 'sag']},
+
+        {'scaler': [scaler],
+        'pca': [pca],
+        'pca__n_components': np.linspace(2, 100, 100-1, dtype=int), 
+        'classifier__C': np.logspace(-4, 2, num=10),
+        'classifier__penalty': ['none', 'l1', 'l2'], 
+        'classifier__solver': ['saga', 'sag']}
+    ]
 
 
 # ========== GRID SEARCH ======================================================
