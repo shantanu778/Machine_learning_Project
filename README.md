@@ -1,4 +1,4 @@
-# Machine_learning_Project
+# Machine learning Project
 ### Hand Written Digit Recognization Using Machine Learning Approach
 
 ## Installation
