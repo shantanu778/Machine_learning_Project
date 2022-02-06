@@ -6,17 +6,16 @@
 pip install -r requirements.txt
 ```
 ## Preprocess Dataset
-Copy your Dataset into `/dataset` folder and run the following command:
+Copy your dataset.txt file into `/dataset` folder and run the following command:
 
 ```
 python prep_dataset.py
 ```
 
 ## Train a model
-First of all Change your current directory to the desired model you want to train
-Like, for training Neural Network model, First insert into the folder and run:
+First, change your current directory to the folder containing the desired model you want to train. 
+For example, for training the neural network model, chang the directory and run:
 
 ```
 python neural_net_keras.py
 ```
-
